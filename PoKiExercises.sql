@@ -111,6 +111,11 @@
 	SELECT MAX(Poem.WordCount)
 	FROM Poem);*/
 
+-- Another way to get thw Word Count
+ /*Select Top 1 Title, WordCount 
+	From Poem
+	Order By WordCount Desc*/
+
 -- 15) Which author(s) have the most poems? (Remember authors can have the same name.)
 -- Look at the poets and poems. Join those tables. But count the number of poems they have.
 -- Different poeple even though they have same names. Order the poems from most to fewest (Desc)
@@ -141,6 +146,12 @@
 	LEFT JOIN Emotion on PoemEmotion.EmotionId = Emotion.Id
 	WHERE Emotion.Name IS NULL;*/
 
+-- Better way to do this. You don't need join the meotion.. an emotion will already be attached
+ /*Select Count(*) as Emotionless
+	from Poem
+	Left Join PoemEmotion on PoemEmotion.PoemId = Poem.Id 
+	Where Poem.Id IS NULL*/
+
 -- 18) Which emotion is associated with the least number of poems?
 -- Without the 'where' at the end of 17 you would be able to see all emotions associated with the poems.
 -- Here we group the poems to their emotion then we order them with one with the fewest emotions is first.
@@ -156,26 +167,31 @@
 -- 19) Which grade has the largest number of poems with an emotion of joy?
 -- Becuase 'TOP 1" is used we wont need an order by. The query will reeturn only one grade.
 -- 'Having' clause becuase 'where' keyword cannot be used to aggregate functions.
+-- You just want the emotions not the wones without an emotion.. Limits the return. 1 step closer to the query
+-- Just use join instead of Left Join
+-- Corrected during class --
 
- /*SELECT TOP 1 COUNT(Poem.Id) as Poems, Grade.Name as Grade, Emotion.Name
+ /*SELECT TOP 1 Grade.Name as Grade
 	FROM Poem
-	LEFT JOIN PoemEmotion on Poem.Id = PoemEmotion.PoemId
-	LEFT JOIN Emotion on PoemEmotion.EmotionId = Emotion.Id
-	LEFT JOIN Author on Poem.AuthorId = Author.Id
-	LEFT JOIN Grade on Author.GradeId = Grade.Id
-	GROUP BY Grade.Name, Emotion.Name
-	HAVING Emotion.Name = 'Joy';*/
+	JOIN PoemEmotion on Poem.Id = PoemEmotion.PoemId
+	JOIN Emotion on PoemEmotion.EmotionId = Emotion.Id
+	JOIN Author on Poem.AuthorId = Author.Id
+	JOIN Grade on Author.GradeId = Grade.Id
+	WHERE Emotion.Name = 'Joy'
+	GROUP BY Grade.Name
+	ORDER BY COUNT(Poem.Id) DESC;*/
 
 -- 20) Which gender has the least number of poems with an emotion of fear?
 -- This will need the ORDER BY in order to show which gender is has the least emotions... 
 -- Written like #19, we need to connect the tables to query the info asked for.
+-- Corrected during class discussion. Similar to the one above
 
- /*SELECT COUNT(Poem.Id) as FearfulPoems, Gender.Name as Gender, Emotion.Name
+ /*SELECT TOP 1 Gender.Name as Gender
 	FROM Poem
-	LEFT JOIN PoemEmotion on Poem.Id = PoemEmotion.PoemId
-	LEFT JOIN Emotion on PoemEmotion.EmotionId = Emotion.Id
-	LEFT JOIN Author on Poem.AuthorId = Author.Id
-	LEFT JOIN Gender on Author.GenderId = Gender.Id
-	GROUP BY Gender.Name, Emotion.Name
-	HAVING Emotion.Name = 'Fear'
-	ORDER BY FearfulPoems;*/
+	JOIN PoemEmotion on Poem.Id = PoemEmotion.PoemId
+	JOIN Emotion on PoemEmotion.EmotionId = Emotion.Id
+	JOIN Author on Poem.AuthorId = Author.Id
+	JOIN Gender on Author.GenderId = Gender.Id
+	WHERE Emotion.Name = 'Fear'
+	GROUP BY Gender.Name
+	ORDER BY COUNT(Poem.Id) ASC;*/
